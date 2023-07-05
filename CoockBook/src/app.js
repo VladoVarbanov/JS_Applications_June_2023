@@ -1,116 +1,121 @@
-async function getRecipes() {
-  const response = await fetch("http://localhost:3030/data/recipes");
-  const recipes = await response.json();
+import { showCatalog } from "./catalogPage.js";
 
-  return Object.values(recipes);
-}
+const main = document.querySelector("main");
 
-async function getRecipesWithSelectedColumns(columns) {
-  let columnsString = columns.join(",");
-  let encodedPart = encodeURIComponent(columnsString);
-  const response = await fetch(
-    `http://localhost:3030/data/recipes?select=${encodedPart}`
-  );
-  const recipes = await response.json();
+const pages = {
+  createPage: document.getElementById("createRecipe"),
+  loginPage: document.getElementById("login"),
+  registerPage: document.getElementById("register"),
+};
 
-  return Object.values(recipes);
-}
+main.innerHTML = "";
 
-async function getRecipeById(id) {
-  const response = await fetch("http://localhost:3030/data/recipes/" + id);
-  const recipe = await response.json();
+const links = {
+  catalogLink: document.getElementById("catalogLink"),
+  createPageLink: document.getElementById("createRecipeLink"),
+  loginLink: document.getElementById("loginLink"),
+  registerLink: document.getElementById("registerLink"),
+  logoutLink: document.getElementById("logoutBtn"),
+};
 
-  return recipe;
-}
+links.catalogLink.addEventListener("click", () => showCatalog(main));
+// links.createPageLink.addEventListener("click", showCreateRecipe);
+links.loginLink.addEventListener("click", showLogin);
+links.registerLink.addEventListener("click", showRegister);
+links.logoutLink.addEventListener("click", logout);
 
-function createRecipePreview(recipe) {
-  const result = e(
-    "article",
-    { className: "preview", onClick: toggleCard },
-    e("div", { className: "title" }, e("h2", {}, recipe.name)),
-    e("div", { className: "small" }, e("img", { src: recipe.img }))
-  );
+showCatalog(main);
 
-  return result;
+async function logout() {
+  let url = "http://localhost:3030/users/logaut";
+  let settings = {
+    method: "GET",
+    headers: {
+      "X-Authorization": sessionStorage.getItem("accessToken"),
+    },
+  };
 
-  async function toggleCard() {
-    const fullRecipe = await getRecipeById(recipe._id);
-
-    result.replaceWith(createRecipeCard(fullRecipe));
+  const response = await fetch(url, settings);
+  if (response.status === 204) {
+    sessionStorage.removeItem("accessToken");
+    showCatalog(main);
   }
 }
 
-function createRecipeCard(recipe) {
-  const result = e(
-    "article",
-    {},
-    e("h2", {}, recipe.name),
-    e(
-      "div",
-      { className: "band" },
-      e("div", { className: "thumb" }, e("img", { src: recipe.img })),
-      e(
-        "div",
-        { className: "ingredients" },
-        e("h3", {}, "Ingredients:"),
-        e(
-          "ul",
-          {},
-          recipe.ingredients.map((i) => e("li", {}, i))
-        )
-      )
-    ),
-    e(
-      "div",
-      { className: "description" },
-      e("h3", {}, "Preparation:"),
-      recipe.steps.map((s) => e("p", {}, s))
-    )
-  );
+async function register(e) {
+  e.preventDefault();
+  let form = e.target;
+  let formData = new FormData(form);
 
-  return result;
-}
+  const password = formData.get("password");
+  const rePass = formData.get("rePass");
 
-window.addEventListener("load", async () => {
-  const main = document.querySelector("main");
-
-  const recipes = await getRecipesWithSelectedColumns(["_id", "name", "img"]);
-  const cards = recipes.map(createRecipePreview);
-
-  let accessToken = sessionStorage.getItem("accessToken");
-  if (accessToken == undefined) {
-    let guest = document.getElementById("guest");
-    guest.style.display = "inline-block";
-  } else {
-    let user = document.getElementById("user");
-    user.style.display = "inline-block";
+  // Validate values are not empty.
+  if (password !== rePass) {
+    return alert("The password need to match");
   }
 
+  let url = "http://localhost:3030/users/register";
+  let settings = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: formData.get("email"),
+      password: formData.get("password"),
+    }),
+  };
+
+  let response = await fetch(url, settings);
+
+  try {
+    if (response.status === 200) {
+      let result = await response.json();
+      sessionStorage.setItem("accessToken", result.accessToken);
+      showCatalog(main);
+    } else {
+      let jsonResponse = await response.json();
+      throw new Error(jsonResponse.message);
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function showRegister() {
   main.innerHTML = "";
-  cards.forEach((c) => main.appendChild(c));
-});
+  main.appendChild(pages.registerPage);
 
-function e(type, attributes, ...content) {
-  const result = document.createElement(type);
+  let form = pages.registerPage.querySelector("form");
+  form.removeEventListener("submit", register);
+  form.addEventListener("submit", register);
+}
 
-  for (let [attr, value] of Object.entries(attributes || {})) {
-    if (attr.substring(0, 2) == "on") {
-      result.addEventListener(attr.substring(2).toLocaleLowerCase(), value);
-    } else {
-      result[attr] = value;
-    }
-  }
+async function login(e) {
+  e.preventDefault();
+  let form = e.target;
+  let formData = new FormData(form);
 
-  content = content.reduce((a, c) => a.concat(Array.isArray(c) ? c : [c]), []);
+  let url = "http://localhost:3030/users/login";
+  let settings = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: formData.get("email"),
+      password: formData.get("password"),
+    }),
+  };
+  let response = await fetch(url, settings);
+  let result = await response.json();
 
-  content.forEach((e) => {
-    if (typeof e == "string" || typeof e == "number") {
-      const node = document.createTextNode(e);
-      result.appendChild(node);
-    } else {
-      result.appendChild(e);
-    }
-  });
+  sessionStorage.setItem("accessToken", result.accessToken);
+  showCatalog(main);
+}
 
-  return result;
+async function showLogin() {
+  main.innerHTML = "";
+  main.appendChild(pages.loginPage);
+
+  let form = pages.loginPage.querySelector("form");
+  form.removeEventListener("submit", login);
+  form.addEventListener("submit", login);
 }

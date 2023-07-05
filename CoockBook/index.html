@@ -1,32 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>My Cookbook</title>
-    <link rel="stylesheet" href="static/site.css">
-    <link rel="stylesheet" href="static/recipe.css">
-    <script src="/src/app.js"></script>
-</head>
+    <link rel="stylesheet" href="static/site.css" />
+    <link rel="stylesheet" href="static/recipe.css" />
+    <link rel="stylesheet" href="static/form.css" />
+    <script src="/src/app.js" type="module"></script>
+  </head>
 
-<body>
+  <body>
     <header>
-        <h1>My Cookbook</h1>
-        <nav>
-            <a class="active">Catalog</a>
-            <div id="user">
-                <a href="create.html">Create Recipe</a>
-                <a id="logoutBtn" href="javascript:void(0)">Logout</a>
-            </div>
-            <div id="guest">
-                <a href="login.html">Login</a>
-                <a href="register.html">Register</a>
-            </div>
-        </nav>
+      <h1>My Cookbook</h1>
+      <nav>
+        <a id="catalogLink" class="active" href="javascript:void(0)">Catalog</a>
+        <div id="user">
+          <a id="createRecipeLink" href="javascript:void(0)">Create Recipe</a>
+          <a id="logoutBtn" href="javascript:void(0)">Logout</a>
+        </div>
+        <div id="guest">
+          <a id="loginLink" href="javascript:void(0)">Login</a>
+          <a id="registerLink" href="javascript:void(0)">Register</a>
+        </div>
+      </nav>
     </header>
     <main>
-        <p style="color: white">Loading...</p>
-    </main>
-</body>
+      <p style="color: white">Loading...</p>
 
+      <article id="createRecipe">
+        <h2>New Recipe</h2>
+        <form>
+          <label
+            >Name: <input type="text" name="name" placeholder="Recipe name"
+          /></label>
+          <label
+            >Image: <input type="text" name="img" placeholder="Image URL"
+          /></label>
+          <label class="ml"
+            >Ingredients:
+            <textarea
+              name="ingredients"
+              placeholder="Enter ingredients on separate lines"
+            ></textarea>
+          </label>
+          <label class="ml"
+            >Preparation:
+            <textarea
+              name="steps"
+              placeholder="Enter preparation steps on separate lines"
+            ></textarea>
+          </label>
+          <input type="submit" value="Create Recipe" />
+        </form>
+      </article>
+
+      <article id="login">
+        <h2>Login</h2>
+        <form>
+          <label>E-mail: <input type="text" name="email" /></label>
+          <label>Password: <input type="password" name="password" /></label>
+          <input type="submit" value="Login" />
+        </form>
+      </article>
+
+      <article id="register">
+        <h2>Register</h2>
+        <form>
+          <label>E-mail: <input type="text" name="email" /></label>
+          <label>Password: <input type="password" name="password" /></label>
+          <label>Repeat: <input type="password" name="rePass" /></label>
+          <input type="submit" value="Register" />
+        </form>
+      </article>
+    </main>
+  </body>
 </html>
