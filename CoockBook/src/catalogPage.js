@@ -1,6 +1,9 @@
+import { showEditPage } from "./edistRecipePage.js";
 import { createElement } from "./util.js";
 
+let _domElement = undefined;
 export async function showCatalog(domElement) {
+  _domElement = domElement;
   domElement.innerHTML = "";
   const recipes = await getRecipesWithSelectedColumns(["_id", "name", "img"]);
   const cards = recipes.map(createRecipePreview);
@@ -18,13 +21,6 @@ export async function showCatalog(domElement) {
 
   cards.forEach((c) => domElement.appendChild(c));
 }
-
-// async function getRecipes() {
-//   const response = await fetch("http://localhost:3030/data/recipes");
-//   const recipes = await response.json();
-
-//   return Object.values(recipes);
-// }
 
 async function getRecipesWithSelectedColumns(columns) {
   let columnsString = columns.join(",");
@@ -98,6 +94,11 @@ function createRecipeCard(recipe) {
       { className: "description" },
       createElement("h3", {}, "Preparation:"),
       recipe.steps.map((s) => createElement("p", {}, s))
+    ),
+    createElement(
+      "button",
+      { onClick: () => showEditPage(_domElement, recipe._id) },
+      "Edit"
     )
   );
 
