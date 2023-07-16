@@ -21,9 +21,7 @@ async function sendMessage(e) {
 
   await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-type": "application/json",
-    },
+    headers: { "Content-type": "application/json" },
     body: JSON.stringify(message),
   });
   authorNameInput.value = "";
