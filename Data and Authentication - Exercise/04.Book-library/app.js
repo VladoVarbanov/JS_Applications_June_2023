@@ -6,12 +6,9 @@ form.addEventListener("submit", sendForm);
 let editId = "";
 
 async function loadAllBooks() {
-  let temp = document.getElementById("tbody");
-  if (temp) {
-    temp.remove();
-  }
-  let tbody = document.createElement("tbody");
-  tbody.id = "tbody";
+  let tbody = document.getElementById("tbody");
+  tbody.querySelectorAll("tr").forEach((tr) => tr.remove());
+
   const table = document.getElementById("table");
   table.appendChild(tbody);
   const data = await getAllBooks();
@@ -78,8 +75,8 @@ async function sendForm(event) {
     title: titleForm,
   };
   const options = {
-    method: "Post",
     header: { "Content-type": "application/json" },
+    method: "Post",
     body: JSON.stringify(body),
   };
   const send = await fetch(url, options);
