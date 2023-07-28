@@ -11,19 +11,18 @@ let _domElement = undefined;
 let _navElement = undefined;
 
 let views = {
-  catalog: async () => {
+  catalog: async (extraParams) => {
     showNavigation(_navElement);
-    let template = await showCatalog(navigate);
+    let template = await showCatalog(navigate, extraParams);
     render(template, _domElement);
   },
   createRecipe: async () => {
     showNavigation(_navElement);
-    let template = await showCreateRecipe(navigate);
-    render(template, _domElement);
+    return await showCreateRecipe(navigate, ...extraParams);
   },
-  editRecipe: (id) => {
+  editRecipe: (extraParams) => {
     showNavigation(_navElement);
-    showEditPage(_domElement, id, navigate);
+    showEditPage(_domElement, navigate, extraParams);
   },
   login: () => {
     showNavigation(_navElement);
@@ -44,12 +43,12 @@ export function init(domElement, navElement) {
   _navElement = navElement;
 }
 
-export async function navigate(pageName, id) {
-  if (views[pageName]) {
-    views[pageName](id);
-  } else {
-    views["catalog"]();
-  }
+export async function navigate(pageName, ...extraParams) {
+  let template = views[pageName]
+    ? await views[pageName](extraParams)
+    : await views["catalog"](extraParams);
+
+  render(template, _domElement);
 }
 
 async function showNavigation(navElement) {

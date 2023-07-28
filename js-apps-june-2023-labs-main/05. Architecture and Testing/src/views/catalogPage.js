@@ -2,17 +2,23 @@ import { createElement } from "../util.js";
 import * as recipeService from "../services/recipeService.js";
 import { html } from "../../node_modules/lit-html/lit-html.js";
 
-let allRecipePreviewsTemplate = (recipes) =>
-  html`${recipes.map((r) => recipePreviewTemplate(r))}`;
+let allRecipePreviewsTemplate = (recipes, toggleCard) =>
+  html` <section id="catalog">
+    ${recipes.map((r) =>
+      r.ingredients === undefined
+        ? recipePreviewTemplate(r, toggleCard)
+        : recipeCardTemplate(r)
+    )}
+  </section>`;
 
-let recipePreviewTemplate = (recipe) =>
-  html`<article class="preview">
+let recipePreviewTemplate = (recipe, toggleCard) =>
+  html`<article class="preview" @click=${() => toggleCard(recipe._id)}>
     <div class="title"><h2>${recipe.name}</h2></div>
     <div class="small"><img src=${recipe.img} /></div>
   </article>`;
 
 let recipeCardTemplate = (recipe) =>
-  html`<article>
+  html` <article>
     <h2>${recipe.name}</h2>
     <div class="band">
       <div class="thumb"><img src=${recipe.img} /></div>
@@ -31,19 +37,31 @@ let recipeCardTemplate = (recipe) =>
   </article>`;
 
 let _navigate = undefined;
-export async function showCatalog(navigate) {
+let _detailRecipes = [];
+export async function showCatalog(navigate, extraParams) {
   _navigate = navigate;
-
-  const recipes = await recipeService.getRecipesWithSelectedColumns([
+  _detailRecipes = extraParams[0] != undefined ? extraParams[0] : [];
+  let recipes = await recipeService.getRecipesWithSelectedColumns([
     "_id",
     "name",
     "img",
   ]);
 
-  let template = allRecipePreviewsTemplate(recipes);
+  let recipesPromises = recipes.map((r) => {
+    if (_detailRecipes.includes(r._id)) {
+      return recipeService.getRecipeById(r._id);
+    }
+    return r;
+  });
+  recipes = await Promise.all(recipesPromises);
+
+  let template = allRecipePreviewsTemplate(recipes, toggleCard);
   return template;
-  //   const cards = recipes.map(createRecipePreview);
-  //   cards.forEach((c) => domElement.appendChild(c));
+}
+
+async function toggleCard(id) {
+  _detailRecipes.push(id);
+  _navigate("catalog", _detailRecipes);
 }
 
 function createRecipePreview(recipe) {
@@ -63,11 +81,6 @@ function createRecipePreview(recipe) {
   );
 
   return result;
-
-  async function toggleCard() {
-    const fullRecipe = await recipeService.getRecipeById(recipe._id);
-    result.replaceWith(createRecipeCard(fullRecipe));
-  }
 }
 
 function createRecipeCard(recipe) {

@@ -24,7 +24,7 @@ let createRecipeTemplate = (submitHandler) =>
   </article>`;
 
 let _navigate = undefined;
-export async function showCreateRecipe(domElement, navigate) {
+export async function showCreateRecipe(navigate) {
   _navigate = navigate;
 
   let populatedTemplate = createRecipeTemplate(createRecipe);
