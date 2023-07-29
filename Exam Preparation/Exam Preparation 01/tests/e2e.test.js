@@ -3,7 +3,7 @@ const { expect } = require("chai");
 
 const host = "http://localhost:3000"; // Application host (NOT service host - that can be anything)
 const interval = 600;
-const DEBUG = false;
+const DEBUG = true;
 const slowMo = 500;
 
 const mockData = require("./mock-data.json");
@@ -133,7 +133,7 @@ describe("E2E tests", function () {
       expect(postData.password).to.equal(data.password);
     });
 
-    it("Logout makes correct API call [ 2.5 Points ]", async () => {
+    it.only("Logout makes correct API call [ 2.5 Points ]", async () => {
       const data = mockData.users[0];
       const { post } = await handle(endpoints.login);
       const { get } = await handle(endpoints.logout);
@@ -163,7 +163,7 @@ describe("E2E tests", function () {
   });
 
   describe("Navigation bar [ 5 Points ]", () => {
-    it("Logged user should see correct navigation [ 2.5 Points ]", async () => {
+    it.only("Logged user should see correct navigation [ 2.5 Points ]", async () => {
       // Login user
       const data = mockData.users[0];
       await page.goto(host);

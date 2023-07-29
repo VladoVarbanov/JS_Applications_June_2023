@@ -1,7 +1,7 @@
 import page from "../node_modules/page/page.mjs";
 import { render } from "../node_modules/lit-html/lit-html.js";
 import { AuthService } from "./services/AuthService.js";
-// import { BaseApiService } from "./services/BaseApiService.js";
+import { BaseApiService } from "./services/BaseApiService.js";
 import { BaseCrudApiService } from "./services/BaseCrudApiService.js";
 import { SessionService } from "./services/SessionService.js";
 import { NavComponent } from "./components/nav/nav.js";
@@ -10,6 +10,8 @@ import { HomeComponent } from "./components/home/home.js";
 import { homeTemplate } from "./components/home/homeTemplate.js";
 import { LoginComponent } from "./components/login/login.js";
 import { loginTemplate } from "./components/login/loginTemplate.js";
+import { DashboardComponent } from "./components/dashboard/dashboard.js";
+import { dashboardTemplate } from "./components/dashboard/dashboardTemplate.js";
 
 const main = document.querySelector("#wrapper main");
 const nav = document.querySelector("#wrapper header");
@@ -51,6 +53,11 @@ let loginComponent = new LoginComponent(
   loginTemplate,
   router
 );
+let dashboardComponent = new DashboardComponent(
+  shoesService,
+  renderBody,
+  dashboardTemplate
+);
 
 // Routing.
 page("/index.html", "/");
@@ -58,4 +65,5 @@ page(navComponent.showView);
 
 page("/", homeComponent.showView);
 page("/login", loginComponent.showView);
+page("/dashboard", dashboardComponent.showView);
 page.start();

@@ -9,7 +9,7 @@ export class SessionService {
     return sessionStorage.setItem(key, accessToken);
   }
 
-  RemoveAccessToken() {
+  removeAccessToken() {
     return sessionStorage.removeItem(key);
   }
 }

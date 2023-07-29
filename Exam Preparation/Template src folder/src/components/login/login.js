@@ -1,3 +1,5 @@
+import { UserReadableError } from "../../errors/UserReadableError.js";
+
 export class LoginComponent {
   constructor(authService, renderHandler, templateFunction, router) {
     this.authService = authService;
@@ -15,8 +17,27 @@ export class LoginComponent {
 
   async _loginHandler(e) {
     e.preventDefault();
-    await this.authService.logout();
-    // TODO: Have to change in to /dashboard.
-    this.router.navigate("/");
+
+    let form = e.target;
+    let formData = new FormData(form);
+    console.log(e);
+
+    let email = formData.get("email");
+    let password = formData.get("password");
+
+    if (email == "" || password == "") {
+      alert("Email and Password must not be empty");
+      return;
+    }
+
+    let user = { email, password };
+    try {
+      let result = await this.authService.login(user);
+      this.router.navigate("/");
+    } catch (error) {
+      if (error instanceof UserReadableError) {
+        alert(error.message);
+      }
+    }
   }
 }

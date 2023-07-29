@@ -1,4 +1,4 @@
-export class homeComponent {
+export class HomeComponent {
   constructor(renderHandler, templateFunction) {
     this.renderHandler = renderHandler;
     this.templateFunction = templateFunction;
@@ -6,7 +6,7 @@ export class homeComponent {
   }
 
   async _showView() {
-    let template = this.templateFunction(isUserLoggedIn, this.logoutHandler);
+    let template = this.templateFunction();
     this.renderHandler(template);
   }
 }

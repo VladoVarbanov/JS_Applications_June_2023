@@ -20,7 +20,6 @@ export class LoginComponent {
 
     let form = e.target;
     let formData = new FormData(form);
-    console.log(e);
 
     let email = formData.get("email");
     let password = formData.get("password");
@@ -33,7 +32,7 @@ export class LoginComponent {
     let user = { email, password };
     try {
       let result = await this.authService.login(user);
-      this.router.navigate("/");
+      this.router.navigate("/dashboard");
     } catch (error) {
       if (error instanceof UserReadableError) {
         alert(error.message);

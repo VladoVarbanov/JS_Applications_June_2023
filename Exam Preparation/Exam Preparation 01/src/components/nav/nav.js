@@ -17,7 +17,6 @@ export class NavComponent {
 
   async _logoutHandler() {
     await this.authService.logout();
-    // TODO: Have to change in to /dashboard.
-    this.router.navigate("/");
+    this.router.navigate("/dashboard");
   }
 }

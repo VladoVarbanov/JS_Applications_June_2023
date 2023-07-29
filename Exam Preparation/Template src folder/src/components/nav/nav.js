@@ -8,10 +8,11 @@ export class NavComponent {
     this.showView = this._showView.bind(this);
   }
 
-  async _showView() {
+  async _showView(ctx, next) {
     let isUserLoggedIn = this.authService.isUserLoggedIn();
     let template = this.templateFunction(isUserLoggedIn, this.logoutHandler);
     this.renderHandler(template);
+    next();
   }
 
   async _logoutHandler() {
